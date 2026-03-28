@@ -25,5 +25,3 @@ target/
 *.tmp
 *.bak
 
-# submodule metadata (if any)
-.Frontend/
