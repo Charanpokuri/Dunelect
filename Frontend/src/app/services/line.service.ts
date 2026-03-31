@@ -38,4 +38,10 @@ export class LineService {
     const res = await api.get(`/lines/${lineId}`);
     return res.data;
   }
+
+  /** Line id, name, and location only — fast, no nested meters/readings. */
+  async getLineMeta(lineId: number) {
+    const res = await api.get(`/lines/${lineId}/meta`);
+    return res.data;
+  }
 }

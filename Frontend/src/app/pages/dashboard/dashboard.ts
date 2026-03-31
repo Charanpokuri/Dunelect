@@ -1,24 +1,32 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MeterService } from '../../services/meter.service';
 import { LineService } from '../../services/line.service';
 import { EnergyReadingService } from '../../services/energy-reading.service';
+import { AuthService } from '../../services/auth.service';
+import { OperatorMonitorIconComponent } from '../../components/operator-monitor-icon/operator-monitor-icon';
 import Chart from 'chart.js/auto';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, OperatorMonitorIconComponent],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
 export class DashboardComponent implements OnInit {
+  protected readonly auth = inject(AuthService);
+  
+  @ViewChild('demandChart') demandChartElement: ElementRef | undefined;
+
   stats = { totalMeters: 0, activeMeters: 0, totalLines: 0, totalEnergyToday: 0 };
   linesData: any[] = [];
   selectedLine: any = null;
   lines: any[] = [];
   chart: any;
+  
+  private pendingChartData: any = null;
 
   selectedMonth: number = new Date().getMonth() + 1;
   selectedYear: number = new Date().getFullYear();
@@ -67,7 +75,46 @@ export class DashboardComponent implements OnInit {
       this.stats.totalLines = this.lines.length;
       this.stats.totalEnergyToday = this.linesData.reduce((sum, l) => sum + parseFloat(l.totalConsumption), 0);
 
-      this.cdr.detectChanges();
+      // Auto-select first line if available
+      if (this.linesData.length > 0) {
+        const firstLine = this.linesData[0];
+        this.selectedLine = firstLine;
+        this.currentPage = 1;
+        
+        // Trigger change detection to render the selectedLine in view
+        this.cdr.detectChanges();
+
+        // Now fetch and render chart after view is updated
+        try {
+          const dailyData = await this.lineService.getDailyTotalsPerLine(firstLine.lineId, this.selectedMonth, this.selectedYear);
+          // Use setTimeout to ensure DOM is fully updated
+          setTimeout(() => {
+            this.renderChart(dailyData);
+          }, 100);
+        } catch (e) {
+          console.error("Chart data fetch failed", e);
+        }
+
+        const meterPromises = firstLine.meters.map(async (m: any) => {
+          try {
+            const peakData = await this.readingService.getPeakHour(m.meterId);
+            if (peakData) {
+              const isEntry = 'key' in peakData;
+              const hour = isEntry ? peakData.key : Object.keys(peakData)[0];
+              const value = isEntry ? peakData.value : peakData[hour];
+              m.peakHour = hour !== undefined ? `${String(hour).padStart(2, '0')}:00` : 'N/A';
+              m.peakValue = value !== undefined ? Number(value).toFixed(2) : '0.00';
+            }
+          } catch (e) {
+            m.peakHour = 'N/A';
+            m.peakValue = '0.00';
+          }
+          return m;
+        });
+
+        await Promise.all(meterPromises);
+        this.updateMeterPage();
+      }
     } catch (error) {
       console.error("Dashboard calculation failed", error);
     }

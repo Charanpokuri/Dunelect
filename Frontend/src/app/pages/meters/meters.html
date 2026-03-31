@@ -1,6 +1,14 @@
-<div class="meter-management">
-  <h1>Meters Management</h1>
+<div class="meter-management" [class.loaded]="meters.length > 0">
+  <div class="meters-hero">
+    <div class="meters-hero__bg"></div>
+    <div class="meters-hero__bg--overlay"></div>
+    <div class="meters-hero__inner">
+      <h1 class="meters-hero__title">Meters Management</h1>
+      <p class="meters-hero__subtitle">View all meters and the distribution line each meter is assigned to.</p>
+    </div>
+  </div>
 
+  @if (isAdmin()) {
   <div class="card">
     <h3>{{ isEditMode ? 'Update Meter' : 'Register New Meter' }}</h3>
     <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
@@ -36,6 +44,7 @@
       </button>
     </div>
   </div>
+  }
 
   <div class="card search-section">
     <label><strong>Quick Search by ID:</strong></label>
@@ -50,6 +59,7 @@
         <tr>
           <th>Meter ID</th>
           <th>Meter Code</th>
+          <th>Line</th>
           <th>Status</th>
           <th>Actions</th>
         </tr>
@@ -62,18 +72,23 @@
               {{ m.meterCode }}
             </a>
           </td>
+          <td class="line-cell">{{ lineLabel(m) }}</td>
           <td>
             <span [style.color]="m.status === 'Active' ? '#10b981' : '#ef4444'" style="font-weight: 600;">
               {{ m.status }}
             </span>
           </td>
           <td>
-            <button class="action-btn edit" (click)="editMeter(m)">Edit</button>
-            <button class="action-btn delete" (click)="deleteMeter(m.meterId)">Delete</button>
+            @if (isAdmin()) {
+              <button class="action-btn edit" (click)="editMeter(m)">Edit</button>
+              <button class="action-btn delete" (click)="deleteMeter(m.meterId)">Delete</button>
+            } @else {
+              <span class="muted">View only</span>
+            }
           </td>
         </tr>
         <tr *ngIf="displayMeters.length === 0">
-          <td colspan="5" class="empty-msg">No meters found.</td>
+          <td colspan="6" class="empty-msg">No meters found.</td>
         </tr>
       </tbody>
     </table>

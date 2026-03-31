@@ -1,11 +1,37 @@
-<div class="dashboard-container">
-  <div class="header-section">
-    <h1>Energy Analytics Dashboard</h1>
-    <div class="controls">
-      <select (change)="selectLine($event)" class="dropdown-select">
-        <option value="" disabled selected>Select Power Line</option>
-        <option *ngFor="let line of lines" [value]="line.lineId">{{line.lineName}}</option>
-      </select>
+<div class="dashboard-container" [class.loaded]="selectedLine !== null">
+  <div class="dashboard-hero">
+    <div class="dashboard-hero__bg"></div>
+    <div class="dashboard-hero__bg--overlay"></div>
+    <div class="dashboard-hero__inner">
+      <div class="dashboard-hero__content">
+        <div class="dashboard-hero__titles">
+          <h1 class="dashboard-hero__title">Energy Analytics Dashboard</h1>
+          <p class="dashboard-hero__subtitle">Pick a line to explore usage, trends, and meter-level detail.</p>
+        </div>
+      </div>
+      <div class="dashboard-hero__controls">
+        @if (auth.role() === 'operator') {
+          <div class="dashboard-role-pill" aria-label="Your access level">
+            <span class="dashboard-role-pill__icon-wrap" aria-hidden="true">
+              <app-operator-monitor-icon class="dashboard-role-pill__monitor" size="md" />
+            </span>
+            <span class="dashboard-role-pill__text">Operator</span>
+          </div>
+        }
+        <div class="controls">
+          <label for="dashboard-line-select" class="sr-only">Power line</label>
+          <select
+            id="dashboard-line-select"
+            (change)="selectLine($event)"
+            [value]="selectedLine?.lineId || ''"
+            class="dropdown-select"
+            title="Select a power line"
+          >
+            <option value="" disabled>Select Power Line</option>
+            <option *ngFor="let line of lines" [value]="line.lineId">{{line.lineName}}</option>
+          </select>
+        </div>
+      </div>
     </div>
   </div>
  
@@ -63,7 +89,7 @@
           </div>
         </div>
         <div class="chart-container">
-          <canvas id="demandChart"></canvas>
+          <canvas #demandChart id="demandChart"></canvas>
         </div>
       </div>
     </div>

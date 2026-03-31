@@ -3,6 +3,7 @@ package com.dunelect.v1.Controller;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -45,6 +46,17 @@ public class LinesController {
 	public Lines getLineById(@PathVariable int id) {
 		return lineService.getLineById(id);
 
+	}
+
+	/** Lightweight line fields only (avoids serializing meters and nested readings). */
+	@GetMapping("/{id}/meta")
+	public Map<String, Object> getLineMeta(@PathVariable int id) {
+		Lines l = lineService.getLineById(id);
+		Map<String, Object> m = new HashMap<>();
+		m.put("lineId", l.getLineId());
+		m.put("lineName", l.getLineName());
+		m.put("location", l.getLocation());
+		return m;
 	}
 
 

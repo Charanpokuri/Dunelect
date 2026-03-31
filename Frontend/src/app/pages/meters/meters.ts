@@ -1,9 +1,10 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MeterService } from '../../services/meter.service';
 import { LineService } from '../../services/line.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-meters',
@@ -17,6 +18,9 @@ import { LineService } from '../../services/line.service';
   styleUrls: ['./meters.css']
 })
 export class MetersComponent implements OnInit {
+  protected readonly auth = inject(AuthService);
+  readonly isAdmin = computed(() => this.auth.role() === 'admin');
+
   meters: any[] = [];
   lines: any[] = []; 
   displayMeters: any[] = []; 
@@ -148,5 +152,18 @@ export class MetersComponent implements OnInit {
   resetForm() {
     this.currentMeter = { meterCode: '', lineId: null, status: 'Active' };
     this.isEditMode = false;
+  }
+
+  /** Line name from API (lineName) or resolved from loaded lines list. */
+  lineLabel(m: any): string {
+    if (m?.lineName) {
+      return m.lineName;
+    }
+    const lid = m?.lineId ?? m?.line?.lineId;
+    if (lid == null) {
+      return '—';
+    }
+    const line = this.lines.find((l) => l.lineId === lid);
+    return line?.lineName ?? `Line #${lid}`;
   }
 }

@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
 
@@ -48,6 +49,16 @@ public class Meters {
 
 	public Lines getLine() {
 		return line;
+	}
+
+	@JsonProperty("lineId")
+	public Integer getLineId() {
+		return line == null ? null : line.getLineId();
+	}
+
+	@JsonProperty("lineName")
+	public String getLineName() {
+		return line == null ? null : line.getLineName();
 	}
 
 	public void setLine(Lines line) {

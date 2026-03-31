@@ -1,13 +1,15 @@
-<div class="meter-detail-container">
-  <header class="detail-header">
-    <div class="left-section">
-      <button routerLink="/meters" class="btn-back">← Back</button>
-      <h1>Meter: {{ meterObj?.meterCode }}</h1>
-    </div>
-    
-    <div class="right-section">
-      <label>Date Filter:</label>
-      <input type="date" [(ngModel)]="selectedDate" (change)="applyDateFilter()" class="date-picker">
+<div class="meter-detail-container" [class.loaded]="meterObj !== null">
+  <header class="meter-hero">
+    <div class="meter-hero__bg"></div>
+    <div class="meter-hero__bg--overlay"></div>
+    <div class="meter-hero__inner">
+      <button routerLink="/meters" class="meter-hero__back">← Back to meters</button>
+      <div class="meter-hero__titles">
+        <h1 class="meter-hero__title">Meter: {{ meterObj?.meterCode }}</h1>
+        @if (meterObj?.lineName) {
+          <p class="meter-hero__location">Line: {{ meterObj.lineName }}</p>
+        }
+      </div>
     </div>
   </header>
 
@@ -15,8 +17,14 @@
     <!-- Graph Card -->
     <div class="card graph-card">
       <div class="card-header">
-        <h3>Power Consumption Trend</h3>
-        <span class="badge">Every 30 Mins</span>
+        <div class="card-header__left">
+          <h3>Power Consumption Trend</h3>
+          <span class="badge">Every 30 Mins</span>
+        </div>
+        <div class="card-header__right">
+          <label for="meter-date-filter" class="date-filter-label">Date:</label>
+          <input type="date" id="meter-date-filter" [(ngModel)]="selectedDate" (change)="applyDateFilter()" class="date-picker">
+        </div>
       </div>
       
       <div class="chart-box">
@@ -30,6 +38,7 @@
       </div>
     </div>
     
+    @if (isAdmin()) {
     <div class="card injection-card">
       <h3>Inject Energy Spike</h3>
       <div class="form">
@@ -55,6 +64,7 @@
         <button (click)="injectSpike()" class="btn-primary">Add Reading</button>
       </div>
     </div>
+    }
   </div>
 
   <div class="card table-card">

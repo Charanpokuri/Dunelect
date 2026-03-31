@@ -19,12 +19,13 @@ public class MeterServiceImpl implements MeterService {
 
 	@Override
 	public Meters getMeterById(int id) {
-		return metersRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Meters", "id", id));
+		return metersRepo.findByIdWithLine(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Meters", "id", id));
 	}
 
 	@Override
 	public List<Meters> getAllMeters() {
-		return metersRepo.findAll();
+		return metersRepo.findAllWithLine();
 	}
 
 	@Override

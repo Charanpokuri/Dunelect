@@ -1,9 +1,10 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MeterService } from '../../services/meter.service';
 import { EnergyReadingService } from '../../services/energy-reading.service';
+import { AuthService } from '../../services/auth.service';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
  
@@ -15,6 +16,9 @@ import { ChartConfiguration, ChartOptions } from 'chart.js';
   styleUrls: ['./meter-detail.css']
 })
 export class MeterDetailComponent implements OnInit {
+  protected readonly auth = inject(AuthService);
+  readonly isAdmin = computed(() => this.auth.role() === 'admin');
+
   meterId!: number;
   meterObj: any = null;
   allReadings: any[] = [];

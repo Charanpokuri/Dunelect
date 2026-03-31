@@ -1,4 +1,6 @@
 .lines-container {
+  --line-radius: 16px;
+  --line-shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
   padding: 0;
   font-family: 'Inter', 'Roboto', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', sans-serif;
   max-width: 100%;
@@ -7,11 +9,158 @@
   min-height: 100vh;
 }
 
-h1 {
+/* Hero Section */
+.lines-hero {
+  position: relative;
+  border-radius: var(--line-radius);
+  overflow: hidden;
+  margin: 0 1.25rem 1.5rem;
+  box-shadow: var(--line-shadow);
+}
+
+.lines-hero__bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #082f49 0%, #164e63 30%, #0891b2 65%, #06b6d4 100%);
+  opacity: 0.98;
+}
+
+.lines-hero__bg--overlay {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(255, 255, 255, 0.15), transparent 55%);
+  pointer-events: none;
+}
+
+.lines-hero__inner {
+  position: relative;
+  z-index: 1;
+  padding: 2rem 1.75rem;
+  color: #fff;
+}
+
+.lines-hero__title {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.lines-hero__subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.lines-container.loaded .lines-hero,
+.lines-container.loaded .card {
+  animation: lineFadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.lines-container.loaded .lines-hero {
+  animation-delay: 0.05s;
+}
+
+.lines-container.loaded .card:nth-of-type(1) {
+  animation-delay: 0.08s;
+}
+
+.lines-container.loaded .card:nth-of-type(2) {
+  animation-delay: 0.12s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lines-container.loaded .page-heading,
+  .lines-container.loaded .card {
+    animation: none;
+  }
+}
+
+@keyframes lineFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Skeleton Loading States */
+.lines-container__state {
+  padding: 2rem 1.25rem;
+}
+
+.lines-container__loading-text {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
+
+.lines-container__skeleton {
+  height: 88px;
+  border-radius: var(--line-radius);
+  background: linear-gradient(
+    90deg,
+    var(--border) 0%,
+    rgba(8, 145, 178, 0.12) 50%,
+    var(--border) 100%
+  );
+  background-size: 200% 100%;
+  animation: lineShimmer 1.2s ease-in-out infinite;
+}
+
+.lines-container__skeleton-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@keyframes lineShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lines-container__skeleton {
+    animation: none;
+    background: var(--border);
+  }
+}
+
+.lines-container .page-heading h1 {
   color: var(--primary-dark);
-  margin: 0 0 30px 0;
+  margin: 0;
   font-weight: 700;
   font-size: 1.75rem;
+}
+
+.line-name-link {
+  color: var(--primary-dark);
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.line-name-link:hover {
+  color: var(--primary);
+  border-bottom-color: rgba(8, 145, 178, 0.45);
+}
+
+.meter-count-cell {
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
 .card {
@@ -20,7 +169,7 @@ h1 {
   background: var(--bg-secondary);
   border: 1px solid var(--border);
   padding: 28px;
-  margin-bottom: 24px;
+  margin: 0 1.25rem 24px;
   transition: all 0.3s ease;
 }
 
