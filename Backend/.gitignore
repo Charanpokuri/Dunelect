@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+Dunelect\Backend\src\main\resources\application.properties
