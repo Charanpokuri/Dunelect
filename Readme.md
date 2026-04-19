@@ -1,6 +1,6 @@
 # Dunelect
 
-Dunelect is a full-stack application with a Spring Boot backend and Angular frontend, designed to manage elections or voting systems.
+Dunelect is a full-stack application with a Spring Boot backend and Angular frontend, designed to manage electricity usage in utility company. 
 
 ## Project Structure
 
